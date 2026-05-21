@@ -1,0 +1,2 @@
+/home/kai/Documents/arduino-serial-comms/pc/build/CMakeFiles/edit_cache.dir
+/home/kai/Documents/arduino-serial-comms/pc/build/CMakeFiles/rebuild_cache.dir

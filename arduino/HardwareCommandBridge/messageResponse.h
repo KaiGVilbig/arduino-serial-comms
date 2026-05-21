@@ -2,6 +2,8 @@
 
 #include "messages.h"
 
+int D_PINS[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
 void sendMessage(struct Message msg);
 
 void DevIdentify(struct Message *msg);

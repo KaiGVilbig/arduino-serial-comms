@@ -3,7 +3,7 @@
 #include "programs.h"
 
 void sendMessage(struct Message msg) {
-  char response[47] = {'\0'};
+  char response[77] = {'\0'};
   strcat(response, msg.type);
   strcat(response, ",");
   
@@ -14,7 +14,6 @@ void sendMessage(struct Message msg) {
 
   strcat(response, msg.status);
   strcat(response, ",");
-
   strcat(response, msg.response);
 
   Serial.write(response);
@@ -53,6 +52,7 @@ void Read(struct Message *msg) {
 void Set(struct Message *msg) {
   if (strcmp(msg->action, "LED") == 0 && (msg->params[0] == 0 || msg->params[0] == 1)) {
     digitalWrite(LED_BUILTIN, msg->params[0]);
+    D_PINS[13] = msg->params[0];
     strcpy(msg->status, STATUS_GOOD);
   } else if (strcmp(msg->action, "PIN") == 0 && msg->params[0] < LED_BUILTIN && msg->params[0] > 1) {
     pinMode(msg->params[0], OUTPUT);
@@ -62,9 +62,10 @@ void Set(struct Message *msg) {
       outValue = analogRead(pinNo(msg->params[2]));
     }
     analogWrite(msg->params[0], outValue);
+    D_PINS[msg->params[0]] = outValue;
 
-    char res[6];
-    itoa(outValue, res, sizeof(res));
+    char res[10];
+    itoa(outValue, res, 10);
     strcpy(msg->response, res);
     strcpy(msg->status, STATUS_GOOD);
   } else {
@@ -78,6 +79,16 @@ void Status(struct Message *msg) {
     char stat = digitalRead(msg->params[0]) + '0';
     strcpy(msg->status, STATUS_GOOD);
     msg->response[0] = stat;
+  } else if (strcmp(msg->action, "ALL") == 0) {
+    Serial.println(sizeof(D_PINS) / sizeof(int));
+    for (int i = 0; i < sizeof(D_PINS) / sizeof(int); i++) {
+      char value[10];
+      itoa(D_PINS[i], value, 10);
+      Serial.println(value);
+      strcat(msg->response, value);
+      strcat(msg->response, ",");
+    }
+    strcpy(msg->status, STATUS_GOOD);
   } else {
     strcpy(msg->status, STATUS_FAIL);
     strcpy(msg->response, "BAD_PARAM");

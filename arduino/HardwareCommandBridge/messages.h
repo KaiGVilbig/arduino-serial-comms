@@ -15,7 +15,7 @@ struct Message {
   char action[10] = {'\0'};
   int params[5] = {-1};
   char status[5] = {'\0'};
-  char response[20] = {'\0'};
+  char response[50] = {'\0'};
 };
 
 // IDENTIFY
