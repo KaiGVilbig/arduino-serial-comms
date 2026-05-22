@@ -1,1 +1,6 @@
 */build
+pc/CMakeCache.txt
+pc/CMakeFiles/
+pc/Makefile
+pc/cmake_install.cmake
+pc/arduino-serial-comms
