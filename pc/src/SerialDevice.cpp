@@ -52,7 +52,7 @@ bool SerialDevice::openComm() {
     tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
     tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
-    tty.c_cc[VTIME] = 50;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty.c_cc[VTIME] = 5;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
     tty.c_cc[VMIN] = 0;
 
     // Set in/out baud rate to be 9600
@@ -96,12 +96,17 @@ void SerialDevice::sendCommand(const std::string& command) {
 }
 
 std::string SerialDevice::readResponse() {
-    char read_buf [1024] = {'\0'};
+    char read_buf [256] = {'\0'};
+    std::string buffer = "";
 
-    int n = read(_fd, &read_buf, sizeof(read_buf));
-    if (n == -1) {
-        LOG4CXX_ERROR(deviceManagerLogger, "Serial Read failed");
+    while (buffer.find('\n') == std::string::npos) {
+        int n = read(_fd, read_buf, sizeof(read_buf));
+        if (n == -1) {
+            LOG4CXX_ERROR(deviceManagerLogger, "Serial Read failed");
+            break;
+        }
+        buffer += std::string(read_buf, n);
     }
 
-    return read_buf;
+    return buffer;
 }

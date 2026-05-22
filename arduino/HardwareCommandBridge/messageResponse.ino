@@ -16,7 +16,8 @@ void sendMessage(struct Message msg) {
   strcat(response, ",");
   strcat(response, msg.response);
 
-  Serial.write(response);
+  // use println so \n is appended at end
+  Serial.println(response);
 }
 
 void DevIdentify(struct Message *msg) {
