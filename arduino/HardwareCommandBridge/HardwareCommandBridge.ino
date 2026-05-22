@@ -39,9 +39,6 @@ void messageHandler(char* message) {
 
 struct Message messageParser(char* message) {
   struct Message m;
-  Serial.print("Message: ");
-  Serial.print(message);
-  Serial.println(" parsing...");
 
   char* saveptr;
   char* token = strtok_r(message, ",", &saveptr);

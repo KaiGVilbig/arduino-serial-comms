@@ -80,11 +80,9 @@ void Status(struct Message *msg) {
     strcpy(msg->status, STATUS_GOOD);
     msg->response[0] = stat;
   } else if (strcmp(msg->action, "ALL") == 0) {
-    Serial.println(sizeof(D_PINS) / sizeof(int));
     for (int i = 0; i < sizeof(D_PINS) / sizeof(int); i++) {
       char value[10];
       itoa(D_PINS[i], value, 10);
-      Serial.println(value);
       strcat(msg->response, value);
       strcat(msg->response, ",");
     }
