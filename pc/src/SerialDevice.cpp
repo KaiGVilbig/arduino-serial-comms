@@ -1,4 +1,9 @@
 #include "SerialDevice.h"
+#include <format>
+#include <log4cxx/logmanager.h>
+#include <log4cxx/basicconfigurator.h>
+
+auto deviceManagerLogger = log4cxx::LogManager::getLogger("ardiono-serial-comms.SerialManager");
 
 SerialDevice::SerialDevice(const std::string& port, int baudRate) {
     _port = port;
@@ -12,10 +17,12 @@ SerialDevice::~SerialDevice() {
 bool SerialDevice::openComm() {
     _fd = open(_port.c_str(), O_RDWR);
     if (_fd < 0) {
-        printf("Error %i from open: %s\n", errno, strerror(errno));
+        LOG4CXX_ERROR(deviceManagerLogger, std::format("Error from open: {}", strerror(errno)));
         return false;
     }
 
+    // Flush IO buffer
+    tcflush(_fd, TCIOFLUSH);
     struct termios tty;
 
     // Read in existing settings, and handle any error
@@ -23,7 +30,7 @@ bool SerialDevice::openComm() {
     // must have been initialized with a call to tcgetattr() overwise behaviour
     // is undefined
     if(tcgetattr(_fd, &tty) != 0) {
-        printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
+        LOG4CXX_ERROR(deviceManagerLogger, std::format("Error from tcgetattr: {}", strerror(errno)));
         return false;
     }
 
@@ -45,7 +52,7 @@ bool SerialDevice::openComm() {
     tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
     tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
-    tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty.c_cc[VTIME] = 50;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
     tty.c_cc[VMIN] = 0;
 
     // Set in/out baud rate to be 9600
@@ -66,13 +73,13 @@ bool SerialDevice::openComm() {
 
     // Save tty settings, also checking for error
     if (tcsetattr(_fd, TCSANOW, &tty) != 0) {
-        printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
+        LOG4CXX_ERROR(deviceManagerLogger, std::format("Error from tcsetattr: {}", strerror(errno)));
         return false;
     }
 
     // Sleep for 2 seconds, when tty port opens, arduino may reset
     // give a couple seconds to reboot
-    std::cout << "Arduino booting...\n";
+    LOG4CXX_INFO(deviceManagerLogger, "Arduino booting...");
     sleep(2);
     return true;
 }
@@ -84,25 +91,17 @@ void SerialDevice::closeComm() {
 void SerialDevice::sendCommand(const std::string& command) {
     int n = write(_fd, command.c_str(), command.size());
     if (n == -1) {
-        std::cout << "Write failed\n";
+        LOG4CXX_ERROR(deviceManagerLogger, "Serial Write failed");
     }
 }
 
 std::string SerialDevice::readResponse() {
-    char read_buf [256] = {'\0'};
+    char read_buf [1024] = {'\0'};
 
     int n = read(_fd, &read_buf, sizeof(read_buf));
     if (n == -1) {
-        std::cout << "Read failed\n";
+        LOG4CXX_ERROR(deviceManagerLogger, "Serial Read failed");
     }
 
     return read_buf;
-}
-
-bool SerialDevice::isOpen() const {
-    return _isOpen;
-}
-
-bool SerialDevice::configureBaud(int baudRate) {
-    return true;
 }

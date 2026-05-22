@@ -1,17 +1,25 @@
-#include "SerialDevice.h"
+#include <log4cxx/logmanager.h>
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/consoleappender.h>
+#include <log4cxx/patternlayout.h>
+
+#include "SerialManager.h"
+
+static auto logger = log4cxx::LogManager::getLogger("ardiono-serial-comms");
 
 int main() {
-    SerialDevice device("/dev/ttyUSB0", 9600);
-    if (!device.openComm()) {
-        std::cout << "Comms open failed\n";
-    } else {
-        std::cout << "Serial port opened\n";
+
+    auto layout = std::make_shared<log4cxx::PatternLayout>("[%p] (%d{yyyy-MM-dd HH:mm:ss}) %m%n");
+    auto appender = std::make_shared<log4cxx::ConsoleAppender>(layout);
+    log4cxx::BasicConfigurator::configure(appender);
+
+    LOG4CXX_INFO(logger, "Arduino Serial Comms started.");
+    SerialManager manager;
+    if (manager.init()) {
+        manager.start();
     }
 
-    device.sendCommand("IDENTIFY\n");
-    std::string response = device.readResponse();
-    std::cout << response << std::endl;
-    device.closeComm();
-
+    // shut down logger
+    log4cxx::LogManager::shutdown();
     return 0;
 }

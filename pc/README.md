@@ -2,6 +2,10 @@
 
 C++17 application that connects to the Arduino over serial and sends commands.
 
+## Requirements
+- log4cxx 
+    * install with `sudo apt-get install liblog4cxx-dev`
+
 ## Build
 
 ```bash

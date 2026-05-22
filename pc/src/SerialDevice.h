@@ -13,6 +13,7 @@
 
 class SerialDevice {
 public:
+    SerialDevice();
     SerialDevice(const std::string& port, int baudRate);
     ~SerialDevice();
 
@@ -20,13 +21,10 @@ public:
     void closeComm();
     void sendCommand(const std::string& command);
     std::string readResponse();
-    bool isOpen() const;
 
 private:
     std::string _port;
     bool _isOpen;
     int _baudRate;
     int _fd;
-
-    bool configureBaud(int baudRate);
 };
