@@ -98,11 +98,11 @@ void Run(struct Message *msg) {
   if (strcmp(msg->action, PROGRAM_BLINK) == 0) {
     char blinkNo[10];
     int rate = 500;
-    if (msg->params[1]) {
-      rate = msg->params[1];
+    if (msg->params[2]) {
+      rate = msg->params[2];
     }
 
-    itoa(Blink(msg->params[0], rate), blinkNo, 10);
+    itoa(Blink(msg->params[0], msg->params[1], rate), blinkNo, 10);
     strcpy(msg->status, STATUS_GOOD);
     strcpy(msg->response, blinkNo);
   } else {
