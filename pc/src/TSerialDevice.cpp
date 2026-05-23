@@ -4,6 +4,10 @@ TSerialDevice::TSerialDevice() {
     _failState = false;
 }
 
+TSerialDevice::~TSerialDevice() {
+
+}
+
 void TSerialDevice::setFailState(bool fail) {
     _failState = fail;
 }

@@ -5,7 +5,7 @@ A structured serial command/response interface for controlling and monitoring Ar
 ## Components
 
 - **`arduino/HardwareCommandBridge/`** — Arduino sketch that receives serial commands, dispatches handlers, and sends responses.
-- **`pc/`** — C++17 application that opens the serial port and sends commands.
+- **`pc/`** — C++20 application that opens the serial port and sends commands interactively.
 
 ## Quick Start
 
