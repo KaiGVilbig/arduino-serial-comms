@@ -10,6 +10,8 @@ const char CMD_RUN_PROGRAM[] = "RUN";
 const char STATUS_GOOD[] = "OK";
 const char STATUS_FAIL[] = "FAIL";
 
+char BAD_REQUEST[] = "UNKNOWN_COMMAND";
+
 struct Message {
   char type[10] = {'\0'};
   char action[10] = {'\0'};

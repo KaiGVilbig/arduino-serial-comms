@@ -8,10 +8,13 @@ auto deviceManagerLogger = log4cxx::LogManager::getLogger("ardiono-serial-comms.
 SerialDevice::SerialDevice(const std::string& port, int baudRate) {
     _port = port;
     _baudRate = baudRate;
+    _isOpen = false;
 }
 
 SerialDevice::~SerialDevice() {
-
+    if (isOpen()) {
+        closeComm();
+    }
 }
 
 bool SerialDevice::openComm() {
@@ -89,9 +92,20 @@ void SerialDevice::closeComm() {
 }
 
 void SerialDevice::sendCommand(const std::string& command) {
+
+    int attempt = 0;
     int n = write(_fd, command.c_str(), command.size());
-    if (n == -1) {
-        LOG4CXX_ERROR(deviceManagerLogger, "Serial Write failed");
+
+    while (attempt < MAX_RETRY && n == -1) {
+        n = write(_fd, command.c_str(), command.size());
+        if (n == -1) {
+            LOG4CXX_WARN(deviceManagerLogger, "Serial Write failed, retrying");
+        }
+        attempt++;
+    }
+
+    if (attempt == MAX_RETRY) {
+        LOG4CXX_ERROR(deviceManagerLogger, "Serial write failed, max attempts reached");
     }
 }
 
@@ -109,4 +123,8 @@ std::string SerialDevice::readResponse() {
     }
 
     return buffer;
+}
+
+bool SerialDevice::isOpen() const {
+    return _isOpen;
 }

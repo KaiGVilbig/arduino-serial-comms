@@ -32,6 +32,9 @@ void messageHandler(char* message) {
     Read(&msg);
   } else if (strcmp(msg.type, CMD_RUN_PROGRAM) == 0) {
     Run(&msg);
+  } else {
+    strcat(msg.status, STATUS_FAIL);
+    strcat(msg.response, BAD_REQUEST);
   }
 
   sendMessage(msg);
