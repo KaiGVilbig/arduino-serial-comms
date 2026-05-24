@@ -32,3 +32,8 @@ add_executable(arduino-serial-comms-tests
 
 target_include_directories(arduino-serial-comms-tests PRIVATE src)
 target_link_libraries(arduino-serial-comms-tests PRIVATE GTest::GTest log4cxx)
+
+add_custom_target(valgrind
+    COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:arduino-serial-comms-tests>
+    DEPENDS arduino-serial-comms-tests
+)
