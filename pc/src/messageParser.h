@@ -2,6 +2,7 @@
 #include <string.h>
 #include <vector>
 #include <sstream>
+#include <limits.h>
 
 const char CMD_IDENTIFY[] = "IDENTIFY";
 const char CMD_READ[] = "READ";
@@ -37,12 +38,13 @@ const int RESPONSE_VALUE = 3;
 struct Message {
     char type[10] = {'\0'};
     char action[10] = {'\0'};
-    int params[5] = {-1};
+    int params[5] = {INT_MIN};
     char status[5] = {'\0'};
     char response[50] = {'\0'};
 };
 
 namespace MessageParser {
+    std::string messageSerializer(Message* message);
     ParseError constructMessage(Message* message, const std::string& input);
     ResponseError parseMessage(Message* message, const std::string& raw);
 };

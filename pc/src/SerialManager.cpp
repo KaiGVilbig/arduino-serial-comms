@@ -48,13 +48,19 @@ void SerialManager::writer() {
         if (stopThreads) break;
 
         // writeWait is held here, queue is safe to access
-        std::string command = _writeQueue.front();
+        Message command = _writeQueue.front();
         _writeQueue.pop();
         writeWait.unlock(); // done with queue, release before sending
 
         std::lock_guard<std::mutex> lock(mtx);
-        _device->sendCommand(command);
+        _device->sendCommand(MessageParser::messageSerializer(&command));
         _dataSent = true;
+
+        // Add command to the history
+        historyLock.lock();
+        _commandHistory.push(command);
+        historyLock.unlock();
+
         _cv.notify_one();
     }
 }
@@ -63,6 +69,12 @@ void SerialManager::reader() {
     std::unique_lock<std::mutex> lock(mtx);
     _cv.wait(lock, [this] {return _dataSent;});
     std::string response = _device->readResponse();
+
+    historyLock.lock();
+    Message resp = _commandHistory.back();
+    MessageParser::parseMessage(&resp, response);
+    historyLock.unlock();
+
     std::cout << response;
     _dataSent = false;
 }
@@ -78,9 +90,11 @@ void SerialManager::start() {
         std::cin >> input;
 
         if (input == QUIT) continue;
+        Message msg;
+        MessageParser::constructMessage(&msg, input);
 
         writeLock.lock();
-        _writeQueue.push(input);
+        _writeQueue.push(msg);
         writeLock.unlock();
 
         _cv.notify_one();

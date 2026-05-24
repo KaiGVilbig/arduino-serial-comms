@@ -11,6 +11,27 @@ static void delimSeparator(std::vector<std::string>* msgVector, const std::strin
 }
 
 namespace MessageParser {
+    std::string messageSerializer(Message* message) {
+        std::string msg = std::string(message->type);
+        if (message->action[0] != '\0') {
+            msg += ',' + std::string(message->action);
+        }
+        // if message->status[0] != '\0', it is an incoming message,
+        // add status and response, skip params
+        // else, outgoing message, skip status and response, add params
+        if (message->status[0] != '\0') {
+            msg += ',' + std::string(message->status);
+            msg += ',' + std::string(message->response);
+        } else if (message->params[0] != INT_MIN) {
+            for (int p : message->params) {
+                if (p == INT_MIN) break;
+                msg += ',' + std::to_string(p);
+            }
+        }
+        
+        return msg;
+    }
+
     ParseError constructMessage(Message* message, const std::string& input) {
         std::vector<std::string> separatedMessage;
         delimSeparator(&separatedMessage, input);
@@ -37,7 +58,7 @@ namespace MessageParser {
         return ParseError::NO_ERROR;
     }
 
-    ResponseError parseResponse(Message* message, const std::string& raw) {
+    ResponseError parseMessage(Message* message, const std::string& raw) {
         std::vector<std::string> separatedResponse;
         delimSeparator(&separatedResponse, raw);
 

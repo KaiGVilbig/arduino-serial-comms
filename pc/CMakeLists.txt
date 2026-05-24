@@ -8,6 +8,7 @@ add_executable(arduino-serial-comms
     src/main.cpp
     src/SerialManager.cpp
     src/SerialDevice.cpp
+    src/messageParser.cpp
 )
 
 target_include_directories(arduino-serial-comms PRIVATE
@@ -25,6 +26,7 @@ add_executable(arduino-serial-comms-tests
     src/SerialManager.cpp
     src/SerialDevice.cpp
     src/TSerialDevice.cpp
+    src/messageParser.cpp
 )
 
 target_include_directories(arduino-serial-comms-tests PRIVATE src)
