@@ -47,4 +47,7 @@ namespace MessageParser {
     std::string messageSerializer(Message* message);
     ParseError constructMessage(Message* message, const std::string& input);
     ResponseError parseMessage(Message* message, const std::string& raw);
+
+    std::string errorMessage(ResponseError err);
+    std::string errorMessage(ParseError err);
 };

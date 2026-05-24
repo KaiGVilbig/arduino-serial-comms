@@ -23,6 +23,7 @@ target_link_libraries(arduino-serial-comms PRIVATE log4cxx)
 add_executable(arduino-serial-comms-tests
     test/main.cpp
     test/SerialManagerTest.cpp
+    test/messageParserTest.cpp
     src/SerialManager.cpp
     src/SerialDevice.cpp
     src/TSerialDevice.cpp

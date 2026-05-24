@@ -28,7 +28,7 @@ namespace MessageParser {
                 msg += ',' + std::to_string(p);
             }
         }
-        
+
         return msg;
     }
 
@@ -78,5 +78,40 @@ namespace MessageParser {
             idx++;
         }
         return ResponseError::NO_ERROR;
+    }
+
+    std::string errorMessage(ResponseError err) {
+        std::string resp = "";
+        switch(err) {
+            case ResponseError::WRONG_MESSAGE:
+                resp = "Wrong message for given response.";
+                break;
+            default:
+                resp = "No error.";
+                break;
+        }
+        return resp;
+    }
+
+    std::string errorMessage(ParseError err) {
+        std::string resp = "Command Parse Error: ";
+        switch(err) {
+            case ParseError::TYPE_LEN:
+                resp += "Type field too long.";
+                break;
+            case ParseError::ACTION_LEN:
+                resp += "Action field too long.";
+                break;
+            case ParseError::PARAM_LEN:
+                resp += "Too many parameters.";
+                break;
+            case ParseError::INVALID_PARAM:
+                resp += "Invalid parameter.";
+                break;
+            default:
+                resp = "No error.";
+                break;
+        }
+        return resp;
     }
 }

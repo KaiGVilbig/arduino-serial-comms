@@ -72,8 +72,12 @@ void SerialManager::reader() {
 
     historyLock.lock();
     Message resp = _commandHistory.back();
-    MessageParser::parseMessage(&resp, response);
+    ResponseError r = MessageParser::parseMessage(&resp, response);
     historyLock.unlock();
+
+    if (r != ResponseError::NO_ERROR) {
+        LOG4CXX_ERROR(serialManagerLogger, MessageParser::errorMessage(r));
+    }
 
     std::cout << response;
     _dataSent = false;
@@ -91,7 +95,11 @@ void SerialManager::start() {
 
         if (input == QUIT) continue;
         Message msg;
-        MessageParser::constructMessage(&msg, input);
+        ParseError p = MessageParser::constructMessage(&msg, input);
+        if (p != ParseError::NO_ERROR) {
+            LOG4CXX_ERROR(serialManagerLogger, MessageParser::errorMessage(p));
+            continue;
+        }
 
         writeLock.lock();
         _writeQueue.push(msg);
