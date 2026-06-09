@@ -91,7 +91,7 @@ void SerialManager::start() {
 
     do {
         std::cout << "# ";
-        std::cin >> input;
+        std::getline(std::cin, input);
 
         if (input == QUIT) continue;
         Message msg;

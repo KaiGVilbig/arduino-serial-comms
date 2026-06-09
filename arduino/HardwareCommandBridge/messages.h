@@ -10,12 +10,14 @@ const char CMD_RUN_PROGRAM[] = "RUN";
 const char STATUS_GOOD[] = "OK";
 const char STATUS_FAIL[] = "FAIL";
 
+char BAD_PARAM[] = "BAD_PARAM";
 char BAD_REQUEST[] = "UNKNOWN_COMMAND";
 
 struct Message {
   char type[10] = {'\0'};
   char action[10] = {'\0'};
   int params[5] = {-1};
+  char charParams[50] = {'\0'};
   char status[5] = {'\0'};
   char response[50] = {'\0'};
 };

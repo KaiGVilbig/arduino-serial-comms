@@ -56,8 +56,20 @@ struct Message messageParser(char* message) {
   // Set message params
   int paramNo = 0;
   while ((token = strtok_r(NULL, ",", &saveptr))) {
-    m.params[paramNo] = atoi(token);
-    paramNo++;
+    bool isNum = true;
+    for (int i = 0; i < (int)strlen(token); i++) {
+      if (!isdigit(token[i])) {
+        isNum = false;
+        break;
+      }
+    }
+
+    if (isNum) {
+      m.params[paramNo] = atoi(token);
+      paramNo++;
+    } else {
+      strcpy(m.charParams, token);
+    }
   }
   return m;
 }

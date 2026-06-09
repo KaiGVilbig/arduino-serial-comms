@@ -38,7 +38,8 @@ const int RESPONSE_VALUE = 3;
 struct Message {
     char type[10] = {'\0'};
     char action[10] = {'\0'};
-    int params[5] = {INT_MIN};
+    int params[5] = {INT_MIN, INT_MIN, INT_MIN, INT_MIN, INT_MIN};
+    char charParam[50] = {'\0'};
     char status[5] = {'\0'};
     char response[50] = {'\0'};
 };

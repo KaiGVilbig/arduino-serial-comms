@@ -22,13 +22,17 @@ namespace MessageParser {
         if (message->status[0] != '\0') {
             msg += ',' + std::string(message->status);
             msg += ',' + std::string(message->response);
-        } else if (message->params[0] != INT_MIN) {
-            for (int p : message->params) {
-                if (p == INT_MIN) break;
-                msg += ',' + std::to_string(p);
+        } else {
+            if (message->params[0] != INT_MIN) {
+                for (int p : message->params) {
+                    if (p == INT_MIN) break;
+                    msg += ',' + std::to_string(p);
+                }
+            }
+            if (message->charParam[0] != '\0') {
+                msg += ',' + std::string(message->charParam);
             }
         }
-
         return msg;
     }
 
@@ -45,10 +49,12 @@ namespace MessageParser {
                 if (s.size() >= sizeof(message->action)) return ParseError::ACTION_LEN;
                 strncpy(message->action, s.c_str(), sizeof(message->action) - 1);
             } else if (idx - PARAMS < sizeof(message->params)/sizeof(int)) {
+                // try to cast to int, if fail, string param
                 try{
                     message->params[idx - PARAMS] = std::stoi(s);
                 } catch(const std::exception& e) {
-                    return ParseError::INVALID_PARAM;
+                    strncpy(message->charParam, s.c_str(), sizeof(message->charParam) - 1);
+                    // return ParseError::INVALID_PARAM;
                 }
             } else {
                 return ParseError::PARAM_LEN;

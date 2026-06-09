@@ -105,6 +105,15 @@ void Run(struct Message *msg) {
     itoa(Blink(msg->params[0], msg->params[1], rate), blinkNo, 10);
     strcpy(msg->status, STATUS_GOOD);
     strcpy(msg->response, blinkNo);
+  } else if (strcmp(msg->action, PROGRAM_MORSE) == 0) {
+    bool success = Morse(msg->params[0], msg->charParams);
+    if (success) {
+      strcpy(msg->status, STATUS_GOOD);
+      strcpy(msg->response, msg->charParams);
+    } else {
+      strcpy(msg->status, STATUS_FAIL);
+      strcpy(msg->response, BAD_PARAM);
+    }
   } else {
     strcpy(msg->status, STATUS_FAIL);
     strcpy(msg->response, "UNKNOWN_PROGRAM");
